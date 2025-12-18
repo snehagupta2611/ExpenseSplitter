@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext.jsx";
+
+import Dashboard from "./components/Dashboard.jsx";
+import SignIn from "./components/SignIn.jsx";
+import SignUp from "./components/SignUp.jsx";
+import FriendsList from "./components/Friends/FriendsList.jsx";
+import FriendRequests from "./components/Friends/FriendRequests.jsx";
+import AddFriend from "./components/Friends/AddFriend.jsx";
+import TripList from "./components/Trips/TripList.jsx";
+import TripForm from "./components/Trips/TripForm.jsx";
+import TripPage from "./components/Trips/TripPage.jsx";
+import Chat from "./components/Trips/Chat.jsx";
+import ExpenseList from "./components/Trips/ExpenseList.jsx";
+import ExpenseForm from "./components/Trips/ExpenseForm.jsx";
+import Split from "./components/Trips/Split.jsx";
+import Header from "./components/Header.jsx"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { user } = useAuth();
+
+  const PrivateRoute = ({ children }) => user ? children : <Navigate to="/signin" />;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      <Header/>
+      <Routes>
+        <Route path="/" element={<Navigate to={user ? "/user" : "/signin"} />} />
+
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
+
+        <Route path="/user" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+
+        <Route path="/friends/list" element={<PrivateRoute><FriendsList /></PrivateRoute>} />
+        <Route path="/friends/requests" element={<PrivateRoute><FriendRequests /></PrivateRoute>} />
+        <Route path="/friends/add" element={<PrivateRoute><AddFriend /></PrivateRoute>} />
+
+        <Route path="/trips/list" element={<PrivateRoute><TripList /></PrivateRoute>} />
+        <Route path="/trips/create" element={<PrivateRoute><TripForm /></PrivateRoute>} />
+        <Route path="/trips/:tripId" element={<PrivateRoute><TripPage /></PrivateRoute>} />
+        <Route path="/trips/:tripId/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
+        <Route path="/trips/:tripId/expenses" element={<PrivateRoute><ExpenseList /></PrivateRoute>} />
+        <Route path="/trips/:tripId/add-expense" element={<PrivateRoute><ExpenseForm /></PrivateRoute>} />
+        <Route path="/trips/:tripId/split" element={<PrivateRoute><Split /></PrivateRoute>} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
