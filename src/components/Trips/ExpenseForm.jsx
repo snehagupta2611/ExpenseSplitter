@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { firestore } from "../../firebase";
+import { firestore, firebaseConfig } from "../../firebase";
 import {
   doc,
   getDoc,
@@ -13,7 +13,6 @@ import { useAuth } from "../../context/AuthContext";
 function ExpenseForm() {
   const { tripId } = useParams();
   const { user } = useAuth();
-
   const [members, setMembers] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -27,7 +26,6 @@ function ExpenseForm() {
     const fetchMembers = async () => {
       try {
         if (!tripId) return;
-
         const tripRef = doc(firestore, "trips", tripId);
         const tripSnap = await getDoc(tripRef);
 
@@ -35,19 +33,15 @@ function ExpenseForm() {
           const tripData = tripSnap.data();
           if (tripData.members && Array.isArray(tripData.members)) {
             const uids = tripData.members;
-
             const membersData = await Promise.all(
               uids.map(async (uid) => {
                 const userRef = doc(firestore, "users", uid);
                 const userSnap = await getDoc(userRef);
-                if (userSnap.exists()) {
-                  return { uid, ...userSnap.data() };
-                } else {
-                  return { uid, name: "Unknown User" };
-                }
+                return userSnap.exists()
+                  ? { uid, ...userSnap.data() }
+                  : { uid, name: "Unknown User" };
               })
             );
-
             setMembers(membersData);
           }
         }
@@ -57,24 +51,15 @@ function ExpenseForm() {
         setLoading(false);
       }
     };
-
     fetchMembers();
   }, [tripId]);
 
   const handleSplitChange = (uid) => {
-    if (splitType === "equal") {
-      setSplitBetween((prev) =>
-        prev.find((m) => m.uid === uid)
-          ? prev.filter((m) => m.uid !== uid)
-          : [...prev, { uid, name: members.find((m) => m.uid === uid)?.name, share: 0 }]
-      );
-    } else {
-      setSplitBetween((prev) =>
-        prev.find((m) => m.uid === uid)
-          ? prev.filter((m) => m.uid !== uid)
-          : [...prev, { uid, name: members.find((m) => m.uid === uid)?.name, share: 0 }]
-      );
-    }
+    setSplitBetween((prev) =>
+      prev.find((m) => m.uid === uid)
+        ? prev.filter((m) => m.uid !== uid)
+        : [...prev, { uid, name: members.find((m) => m.uid === uid)?.name, share: 0 }]
+    );
   };
 
   const updateCustomShare = (uid, value) => {
@@ -86,19 +71,18 @@ function ExpenseForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !amount || !paidBy || splitBetween.length === 0) {
-      alert("Please fill all required fields!");
+      alert("Please select at least one person to split with!");
       return;
     }
 
     let finalSplit = [];
-
     if (splitType === "equal") {
       const share = parseFloat(amount) / splitBetween.length;
       finalSplit = splitBetween.map((m) => ({ ...m, share }));
     } else {
       const totalCustom = splitBetween.reduce((sum, m) => sum + (m.share || 0), 0);
-      if (totalCustom !== parseFloat(amount)) {
-        alert("Custom split does not add up to total amount!");
+      if (Math.abs(totalCustom - parseFloat(amount)) > 0.01) {
+        alert(`Custom split total (₹${totalCustom}) must equal total amount (₹${amount})`);
         return;
       }
       finalSplit = splitBetween;
@@ -130,130 +114,92 @@ function ExpenseForm() {
     }
   };
 
-  if (loading) return <p>Loading members...</p>;
+  if (loading) return <div className="text-white text-center mt-20">Loading members...</div>;
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white shadow rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Add Expense</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="pt-24 px-4 pb-10">
+      <div className="glass-card max-w-lg mx-auto p-8 rounded-3xl text-white">
+        <h2 className="text-2xl font-bold mb-6">Add Expense</h2>
 
-        <div>
-          <label className="block font-medium">Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">Amount</label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium">Paid By</label>
-          <select
-            value={paidBy}
-            onChange={(e) => setPaidBy(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          >
-            <option value="">Select member</option>
-            {members.map((member) => (
-              <option key={member.uid} value={member.uid}>
-                {member.name || member.email || member.uid}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block font-medium">Split Type</label>
-          <div className="flex gap-4">
-            <label>
-              <input
-                type="radio"
-                name="splitType"
-                value="equal"
-                checked={splitType === "equal"}
-                onChange={(e) => {
-                  setSplitType(e.target.value);
-                  setSplitBetween([]);
-                }}
-              />
-              Equal
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="splitType"
-                value="custom"
-                checked={splitType === "custom"}
-                onChange={(e) => {
-                  setSplitType(e.target.value);
-                  setSplitBetween([]);
-                }}
-              />
-              Custom
-            </label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Title */}
+          <div className="space-y-1">
+            <label className="text-sm font-medium opacity-80 ml-1">Expense Title</label>
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-3 glass-input rounded-xl outline-none" required placeholder="Dinner at Grand Central" />
           </div>
-        </div>
 
-        <div>
-          <label className="block font-medium">Split Between</label>
-          <div className="space-y-2">
-            {members.map((member) => {
-              const selected = splitBetween.find((m) => m.uid === member.uid);
-              return (
-                <div key={member.uid} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={!!selected}
-                    onChange={() => handleSplitChange(member.uid)}
-                  />
-                  <span>{member.name || member.email || member.uid}</span>
-                  {splitType === "custom" && selected && (
-                    <input
-                      type="number"
-                      placeholder="Share"
-                      value={selected.share || ""}
-                      onChange={(e) =>
-                        updateCustomShare(member.uid, e.target.value)
-                      }
-                      className="w-24 p-1 border rounded"
-                    />
-                  )}
-                </div>
-              );
-            })}
+          {/* Amount and Paid By */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium opacity-80 ml-1">Amount</label>
+              <input type="number" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full p-3 glass-input rounded-xl outline-none font-mono" required placeholder="0.00" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium opacity-80 ml-1">Paid By</label>
+              <select value={paidBy} onChange={(e) => setPaidBy(e.target.value)} className="w-full p-3 glass-input rounded-xl outline-none appearance-none" required>
+                <option value="" className="text-black">Who paid?</option>
+                {members.map((m) => (<option key={m.uid} value={m.uid} className="text-black">{m.name}</option>))}
+              </select>
+            </div>
           </div>
-        </div>
 
-        <button
-          type="submit"
-          className="w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-        >
-          Add Expense
-        </button>
-      </form>
+          {/* Split Type Selector */}
+          <div className="p-4 glass-card bg-white/5 rounded-2xl border-white/5">
+            <label className="block text-sm font-bold mb-3 uppercase tracking-wider opacity-60 text-center">Split Method</label>
+            <div className="flex justify-center gap-8">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="radio" value="equal" checked={splitType === "equal"} onChange={(e) => setSplitType(e.target.value)} className="accent-blue-400 w-4 h-4" /> 
+                Equal
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="radio" value="custom" checked={splitType === "custom"} onChange={(e) => setSplitType(e.target.value)} className="accent-blue-400 w-4 h-4" /> 
+                Custom
+              </label>
+            </div>
+          </div>
+
+          {/* Split Between Members (THE FIX) */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium opacity-80 ml-1">Split Between</label>
+            <div className="glass-card bg-white/5 p-4 rounded-2xl space-y-3 border-white/10">
+              {members.map((member) => {
+                const selected = splitBetween.find((m) => m.uid === member.uid);
+                return (
+                  <div key={member.uid} className="flex items-center justify-between gap-3 p-1">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={!!selected}
+                        onChange={() => handleSplitChange(member.uid)}
+                        className="w-5 h-5 accent-blue-500 rounded-md"
+                      />
+                      <span className="text-sm font-medium">{member.name}</span>
+                    </div>
+
+                    {/* Show custom input only if 'Custom' is selected and user is checked */}
+                    {splitType === "custom" && selected && (
+                      <div className="relative">
+                        <span className="absolute left-2 top-1.5 text-xs opacity-50">₹</span>
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          value={selected.share || ""}
+                          onChange={(e) => updateCustomShare(member.uid, e.target.value)}
+                          className="w-24 p-1.5 pl-5 glass-input rounded-lg text-sm text-right outline-none border-blue-500/30 focus:border-blue-500"
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-xl transition-all transform active:scale-95 mt-4">
+            Add Expense
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -36,40 +36,35 @@ function SignIn() {
   };
 
   return (
-    <>
-    <div className="max-w-md mx-auto mt-20 p-6 border rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Sign In</h1>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
-        />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
-        />
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      <button
-        onClick={handleSignIn}
-        disabled={loading}
-        className="bg-blue-500 text-white px-4 py-2 rounded w-full"
-        >
-        {loading ? "Signing in..." : "Sign In"}
-      </button>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="glass-card w-full max-w-md p-8 rounded-3xl text-white">
+        <h1 className="text-3xl font-bold mb-6 text-center text-white">Welcome Back</h1>
+        <div className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 rounded-xl glass-input outline-none focus:ring-2 ring-blue-400"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 rounded-xl glass-input outline-none focus:ring-2 ring-blue-400"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {error && <p className="text-red-300 text-sm">{error}</p>}
+          <button
+            onClick={handleSignIn}
+            className="w-full py-3 bg-white text-blue-700 font-bold rounded-xl hover:bg-opacity-90 transition-all shadow-lg"
+          >
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </div>
+        <p className="mt-6 text-center text-sm opacity-80">
+          New here? <button onClick={() => navigate("/signup")} className="underline font-bold">Create account</button>
+        </p>
+      </div>
     </div>
-    <button
-        onClick={() => navigate("/signup")}
-        disabled={loading}
-        className="max-w-md mx-auto border shadow bg-red-500 text-white px-4 py-2 rounded flex justify-center items-center mt-5 cursor-pointer"
-        >
-        Sign Up
-    </button>
-    </>
   );
 }
 

@@ -26,13 +26,11 @@ function Chat() {
     const messagesRef = collection(firestore, "trips", tripId, "messages");
     const q = query(messagesRef, orderBy("createdAt", "asc"));
 
-    // Listen for real-time updates
     const unsubscribe = onSnapshot(q, async (snapshot) => {
       const msgs = await Promise.all(
         snapshot.docs.map(async (docSnap) => {
           const msg = { id: docSnap.id, ...docSnap.data() };
 
-          // fetch sender details
           if (msg.sender) {
             const senderRef = doc(firestore, "users", msg.sender);
             const senderSnap = await getDoc(senderRef);
@@ -75,71 +73,39 @@ function Chat() {
   if (loading) return <div>Loading chat...</div>;
 
   return (
-    <>
-      <div className="flex flex-col h-screen max-w-3xl mx-auto border rounded shadow bg-white">
-        {/* Header */}
-        <div className="p-4 border-b bg-gray-100">
-          <h1 className="text-xl font-bold">Trip Chat</h1>
+    <div className="pt-24 h-screen flex flex-col max-w-3xl mx-auto p-4">
+      <div className="glass-card flex-1 flex flex-col rounded-3xl overflow-hidden mb-4">
+        <div className="p-4 border-b border-white/20 bg-white/10">
+          <h1 className="text-xl font-bold text-white">Trip Chat</h1>
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-3">
-          {messages.length === 0 ? (
-            <p className="text-gray-500 text-center">No messages yet</p>
-          ) : (
-            messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${
-                  msg.sender === user.uid ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-xs p-3 rounded-lg shadow ${
-                    msg.sender === user.uid
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-black"
-                  }`}
-                >
-                  <p className="font-semibold text-sm">
-                    {msg.senderName || "Unknown"}
-                  </p>
-                  <p>{msg.text}</p>
-                  <span className="block text-xs mt-1 opacity-70">
-                    {msg.createdAt?.toDate
-                      ? msg.createdAt.toDate().toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : "sending..."}
-                  </span>
-                </div>
+        <div className="flex-1 p-4 overflow-y-auto space-y-4">
+          {messages.map((msg) => (
+            <div key={msg.id} className={`flex ${msg.sender === user.uid ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[80%] p-3 rounded-2xl ${
+                msg.sender === user.uid 
+                ? "bg-blue-600 text-white rounded-tr-none" 
+                : "glass-card text-white rounded-tl-none border-white/10"
+              }`}>
+                <p className="text-[10px] opacity-60 uppercase font-bold mb-1">{msg.senderName}</p>
+                <p>{msg.text}</p>
               </div>
-            ))
-          )}
+            </div>
+          ))}
         </div>
 
-        {/* Input */}
-        <form
-          onSubmit={handleSend}
-          className="p-3 border-t flex items-center bg-gray-50"
-        >
+        <form onSubmit={handleSend} className="p-4 border-t border-white/20 flex gap-2">
           <input
             type="text"
-            placeholder="Type a message..."
+            className="flex-1 glass-input rounded-xl px-4 py-2 outline-none"
+            placeholder="Message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            className="flex-1 border rounded-lg px-4 py-2 mr-2 focus:outline-none"
           />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Send
-          </button>
+          <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-xl font-bold">Send</button>
         </form>
       </div>
-    </>
+    </div>
   );
 }
 

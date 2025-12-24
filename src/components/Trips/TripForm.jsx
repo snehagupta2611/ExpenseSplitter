@@ -108,47 +108,38 @@ function TripForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Create New Trip</h1>
-
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      {success && <p className="text-green-500 mb-4">{success}</p>}
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Trip Name"
-          value={tripName}
-          onChange={(e) => setTripName(e.target.value)}
-          className="w-full p-2 mb-4 border rounded"
-        />
-
-        <div className="mb-4">
-          <p className="font-semibold mb-2">Select Members:</p>
-          {friends.length === 0 ? (
-            <p className="text-gray-500 text-sm">No friends available</p>
-          ) : (
-            friends.map((friend) => (
-              <label key={friend.uid} className="flex items-center space-x-2 mb-1">
+    <div className="pt-24 px-6 flex items-center justify-center">
+      <div className="glass-card w-full max-w-md p-8 rounded-3xl text-white">
+        <h1 className="text-2xl font-bold mb-6">Start New Adventure</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <input
+            type="text"
+            placeholder="Where are we going?"
+            value={tripName}
+            onChange={(e) => setTripName(e.target.value)}
+            className="w-full p-4 glass-input rounded-2xl outline-none border-white/20"
+          />
+          
+          <div className="glass-card bg-white/5 p-4 rounded-2xl max-h-60 overflow-y-auto border-white/10">
+            <p className="text-sm font-bold opacity-60 mb-3 uppercase">Add Friends to Trip:</p>
+            {friends.map((friend) => (
+              <label key={friend.uid} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded-xl transition-colors cursor-pointer">
                 <input
                   type="checkbox"
+                  className="w-5 h-5 accent-blue-500"
                   checked={selectedMembers.includes(friend.uid)}
                   onChange={() => handleMemberToggle(friend.uid)}
                 />
-                <span>{friend.name} ({friend.email})</span>
+                <span className="text-sm">{friend.name}</span>
               </label>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-        >
-          {loading ? "Creating..." : "Create Trip"}
-        </button>
-      </form>
+          <button type="submit" className="w-full py-4 bg-white text-blue-700 font-bold rounded-2xl hover:scale-[1.02] transition-transform">
+            {loading ? "Creating..." : "Launch Trip 🚀"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

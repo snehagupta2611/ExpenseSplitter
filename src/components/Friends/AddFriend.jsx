@@ -56,22 +56,32 @@ function AddFriend() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
-      <h1 className="text-xl font-bold mb-4">Add Friend</h1>
-      <input
-        type="email"
-        placeholder="Enter friend's email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
-      />
-      <button
-        onClick={handleSendRequest}
-        className="bg-blue-500 text-white px-4 py-2 rounded w-full"
-      >
-        Send Request
-      </button>
-      {message && <p className="mt-4 text-gray-700">{message}</p>}
+    <div className="pt-24 px-4 flex items-center justify-center">
+      <div className="glass-card w-full max-w-md p-8 rounded-3xl text-white">
+        <h1 className="text-2xl font-bold mb-2">Add Friend</h1>
+        <p className="opacity-70 mb-6 text-sm">Find your travel buddies by their email.</p>
+        
+        <input
+          type="email"
+          placeholder="friend@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-4 glass-input rounded-2xl outline-none mb-4"
+        />
+        
+        <button
+          onClick={handleSendRequest}
+          className="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl transition-all shadow-lg active:scale-95"
+        >
+          Send Friend Request
+        </button>
+        
+        {message && (
+          <div className="mt-4 p-3 rounded-xl bg-white/10 text-center text-sm border border-white/10 animate-pulse">
+            {message}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

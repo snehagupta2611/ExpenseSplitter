@@ -64,7 +64,6 @@ function Split() {
             memberSummary[expense.paidBy].totalPaid += expense.amount;
           }
 
-
           expense.splitBetween?.forEach((s) => {
             if (memberSummary[s.uid]) {
               memberSummary[s.uid].owedExpenses.push({
@@ -90,100 +89,63 @@ function Split() {
   if (loading) return <p>Loading trip summary...</p>;
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white shadow rounded-lg">
-      <h2 className="text-2xl font-bold mb-6">Trip Summary</h2>
+    <div className="pt-24 px-6 max-w-5xl mx-auto pb-10">
+      <div className="glass-card p-8 rounded-3xl text-white">
+        <h2 className="text-3xl font-bold mb-8">Trip Balance Summary</h2>
 
-      <table className="w-full border border-gray-300 rounded-lg overflow-hidden">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-3 text-left">Member</th>
-            <th className="p-3 text-right">Total Paid</th>
-            <th className="p-3 text-right">Total Owed</th>
-            <th className="p-3 text-right">Net Balance</th>
-            <th className="p-3 text-center">Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(summary).map((uid) => {
-            const data = summary[uid];
-            const net = data.totalPaid - data.totalOwed;
-
-            return (
-              <React.Fragment key={uid}>
-                <tr className="border-t">
-                  <td className="p-3">{members[uid] || uid}</td>
-                  <td className="p-3 text-right">₹{data.totalPaid}</td>
-                  <td className="p-3 text-right">₹{data.totalOwed}</td>
-                  <td
-                    className={`p-3 text-right font-semibold ${
-                      net > 0
-                        ? "text-green-600"
-                        : net < 0
-                        ? "text-red-600"
-                        : "text-gray-600"
-                    }`}
-                  >
-                    {net > 0
-                      ? `+₹${net} (Receive)`
-                      : net < 0
-                      ? `-₹${Math.abs(net)} (Pay)`
-                      : "Settled"}
-                  </td>
-                  <td className="p-3 text-center">
-                    <button
-                      onClick={() =>
-                        setExpanded(expanded === uid ? null : uid)
-                      }
-                      className="text-blue-500 hover:underline"
-                    >
-                      {expanded === uid ? "Hide" : "View"}
-                    </button>
-                  </td>
-                </tr>
-
-                {expanded === uid && (
-                  <tr className="bg-gray-50">
-                    <td colSpan="5" className="p-4">
-                      <div className="grid grid-cols-2 gap-6">
-                        <div>
-                          <h4 className="font-medium mb-2">Paid Expenses</h4>
-                          {data.paidExpenses.length === 0 ? (
-                            <p className="text-gray-500">None</p>
-                          ) : (
-                            <ul className="list-disc list-inside text-gray-700">
-                              {data.paidExpenses.map((exp) => (
-                                <li key={exp.id}>
-                                  {exp.title} – ₹{exp.amount}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-
-                        <div>
-                          <h4 className="font-medium mb-2">Owed Expenses</h4>
-                          {data.owedExpenses.length === 0 ? (
-                            <p className="text-gray-500">None</p>
-                          ) : (
-                            <ul className="list-disc list-inside text-gray-700">
-                              {data.owedExpenses.map((exp) => (
-                                <li key={exp.id}>
-                                  {exp.title} – Owes ₹{exp.owed} (Paid by{" "}
-                                  {members[exp.paidBy] || exp.paidBy})
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
-            );
-          })}
-        </tbody>
-      </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-white/20">
+                <th className="p-4 font-semibold opacity-70">Member</th>
+                <th className="p-4 font-semibold opacity-70 text-right">Paid</th>
+                <th className="p-4 font-semibold opacity-70 text-right">Owed</th>
+                <th className="p-4 font-semibold opacity-70 text-right">Net Balance</th>
+                <th className="p-4 font-semibold opacity-70 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(summary).map((uid) => {
+                const data = summary[uid];
+                const net = data.totalPaid - data.totalOwed;
+                return (
+                  <React.Fragment key={uid}>
+                    <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="p-4 font-bold">{members[uid] || uid}</td>
+                      <td className="p-4 text-right">₹{data.totalPaid}</td>
+                      <td className="p-4 text-right">₹{data.totalOwed}</td>
+                      <td className={`p-4 text-right font-bold ${net > 0 ? "text-green-300" : net < 0 ? "text-red-300" : "text-gray-400"}`}>
+                        {net > 0 ? `+₹${net}` : net < 0 ? `-₹${Math.abs(net)}` : "Settled"}
+                      </td>
+                      <td className="p-4 text-center">
+                        <button onClick={() => setExpanded(expanded === uid ? null : uid)} className="bg-white/10 px-4 py-1 rounded-full text-xs hover:bg-white/20 transition-all border border-white/10">
+                          {expanded === uid ? "Hide" : "Details"}
+                        </button>
+                      </td>
+                    </tr>
+                    {expanded === uid && (
+                      <tr className="bg-white/5">
+                        <td colSpan="5" className="p-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-top-2">
+                            <div className="glass-card bg-green-500/10 p-4 rounded-xl border-green-500/20">
+                              <h4 className="text-green-300 font-bold mb-2 text-xs uppercase tracking-tighter">Paid For</h4>
+                              {data.paidExpenses.map(exp => <div key={exp.id} className="text-sm py-1 border-b border-white/5">{exp.title} — ₹{exp.amount}</div>)}
+                            </div>
+                            <div className="glass-card bg-red-500/10 p-4 rounded-xl border-red-500/20">
+                              <h4 className="text-red-300 font-bold mb-2 text-xs uppercase tracking-tighter">Owes To Group</h4>
+                              {data.owedExpenses.map(exp => <div key={exp.id} className="text-sm py-1 border-b border-white/5">{exp.title} — ₹{exp.owed}</div>)}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

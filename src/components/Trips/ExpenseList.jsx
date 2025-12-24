@@ -115,61 +115,49 @@ function ExpenseList() {
   if (loading) return <p>Loading expenses...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Expenses</h2>
+    <div className="pt-24 px-6 max-w-3xl mx-auto pb-10 text-white">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Expenses</h2>
+        <div className="glass-card px-4 py-2 rounded-full text-sm">
+          Total Items: {expenses.length}
+        </div>
+      </div>
+
       {expenses.length === 0 ? (
-        <p className="text-gray-500">No expenses added yet.</p>
+        <div className="glass-card p-10 rounded-3xl text-center opacity-60 italic">No expenses recorded yet.</div>
       ) : (
         <ul className="space-y-4">
           {expenses.map((expense) => (
-            <li
-              key={expense.id}
-              className="border rounded-lg p-4 shadow-sm bg-gray-50"
-            >
-              <h3 className="text-lg font-bold">{expense.title}</h3>
-              <p>{expense.description}</p>
-              <p className="mt-2">
-                <strong>Amount:</strong> ₹{expense.amount}
-              </p>
-              <p>
-                <strong>Paid By:</strong>{" "}
-                {members[expense.paidBy] || expense.paidBy}
-              </p>
-              <p>
-                <strong>Split:</strong>
-              </p>
-              <ul className="ml-4 list-disc">
-                {expense.splitBetween?.map((s) => (
-                    <li key={s.uid}>
-                      {members[s.uid] || s.uid}: ₹{s.share}
-                    </li>
-                  ))}
-              </ul>
-              <p className="mt-2">
-                <strong>Status:</strong>{" "}
-                {expense.approved ? (
-                  <span className="text-green-600 font-semibold">Approved</span>
-                ) : (
-                  <span className="text-yellow-600 font-semibold">
-                    Pending
+            <li key={expense.id} className="glass-card p-6 rounded-3xl border-white/10">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-blue-300">{expense.title}</h3>
+                  <p className="opacity-70 text-sm italic">{expense.description}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-mono font-bold">₹{expense.amount}</p>
+                  <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-widest ${expense.approved ? 'bg-green-500/30 text-green-300' : 'bg-yellow-500/30 text-yellow-300'}`}>
+                    {expense.approved ? "Approved" : "Pending"}
                   </span>
-                )}
-              </p>
+                </div>
+              </div>
 
-              {!expense.approved && (
-                <div className="mt-3 flex gap-2">
-                  <button
-                    onClick={() => handleApprove(expense.id)}
-                    className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(expense.id)}
-                    className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-                  >
-                    Reject
-                  </button>
+              <div className="grid grid-cols-2 gap-4 text-sm bg-white/5 p-3 rounded-xl">
+                <p><span className="opacity-50">Paid By:</span> {members[expense.paidBy]}</p>
+                <div>
+                   <p className="opacity-50 mb-1">Split Between:</p>
+                   <div className="flex flex-wrap gap-1">
+                     {expense.splitBetween?.map(s => (
+                       <span key={s.uid} className="bg-white/10 px-2 py-0.5 rounded text-[10px]">{members[s.uid]}: ₹{s.share}</span>
+                     ))}
+                   </div>
+                </div>
+              </div>
+
+              {(!expense.approved && user.uid === leaderId) && (
+                <div className="mt-4 flex gap-2">
+                  <button onClick={() => handleApprove(expense.id)} className="flex-1 bg-green-500/40 hover:bg-green-500 py-2 rounded-xl font-bold transition-all">Approve</button>
+                  <button onClick={() => handleReject(expense.id)} className="flex-1 bg-red-500/40 hover:bg-red-500 py-2 rounded-xl font-bold transition-all">Reject</button>
                 </div>
               )}
             </li>

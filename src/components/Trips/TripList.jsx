@@ -61,36 +61,40 @@ const TripList = () => {
     fetchTrips();
   }, [user]);
 
-  if (loading) return <p>Loading trips...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) return <div className="text-white text-center mt-20">Loading trips...</div>;
 
   return (
-    <div className="max-w-lg mx-auto mt-6 p-6 border rounded shadow bg-white">
-      <h2 className="text-xl font-bold mb-4">My Trips</h2>
-      {trips.length === 0 ? (
-        <p className="text-gray-500">No trips yet</p>
-      ) : (
-        <div className="grid gap-3">
-          {trips.map((t) => (
-            <div
-              key={t.id}
-              className="p-4 border rounded shadow-sm bg-gray-50 cursor-pointer hover:bg-gray-100"
-              onClick={() => navigate(`/trips/${t.id}`)}
-            >
-              <p className="font-semibold">{t.name}</p>
-              <p className="text-sm text-gray-600">
-                Leader: {t.leader.name} ({t.leader.email})
-              </p>
-              <p className="text-sm text-gray-500">
-                Members: {t.members.length}
-              </p>
-              <p className="text-sm text-gray-400">
-                Status: {t.isActive ? "Active" : "Ended"}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="pt-24 px-6 max-w-2xl mx-auto">
+      <div className="glass-card p-6 rounded-3xl text-white">
+        <h2 className="text-2xl font-bold mb-6">My Trips</h2>
+        {trips.length === 0 ? (
+          <p className="opacity-60 italic text-center py-10">No adventures planned yet...</p>
+        ) : (
+          <div className="grid gap-4">
+            {trips.map((t) => (
+              <div
+                key={t.id}
+                className="glass-card bg-white/5 p-5 rounded-2xl cursor-pointer hover:bg-white/10 transition-all border-white/10"
+                onClick={() => navigate(`/trips/${t.id}`)}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-xl font-bold">{t.name}</p>
+                    <p className="text-sm opacity-70">Leader: {t.leader.name}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${t.isActive ? 'bg-green-500/40' : 'bg-red-500/40'}`}>
+                    {t.isActive ? "ACTIVE" : "ENDED"}
+                  </span>
+                </div>
+                <div className="mt-4 flex gap-4 text-xs opacity-60">
+                  <p>Members: {t.members.length}</p>
+                  <p>{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ""}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

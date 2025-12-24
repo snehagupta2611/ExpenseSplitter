@@ -5,23 +5,18 @@ const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/signin");
-  };
-
   return (
-    <header className="w-full h-15 bg-blue-600 text-white shadow-md p-4 flex justify-between items-center relative">
-      <div className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-semibold">
-        SplitEase
+    <header className="fixed top-0 w-full z-50 glass-card bg-opacity-10 px-6 py-4 flex justify-between items-center">
+      <div className="text-2xl font-bold text-white tracking-tight cursor-pointer" onClick={() => navigate("/user")}>
+        Split<span className="text-blue-300">Ease</span>
       </div>
 
       {user && (
-        <div className="absolute right-6 flex items-center gap-3">
-          <span className="font-medium">{user.name || "User"}</span>
+        <div className="flex items-center gap-4">
+          <span className="text-white hidden md:block">Hi, {user.name}</span>
           <button
-            onClick={handleLogout}
-            className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-gray-100 transition cursor-pointer"
+            onClick={logout}
+            className="bg-red-500 bg-opacity-60 hover:bg-opacity-80 text-white px-4 py-1.5 rounded-full transition-all text-sm backdrop-blur-md border border-white/20"
           >
             Logout
           </button>

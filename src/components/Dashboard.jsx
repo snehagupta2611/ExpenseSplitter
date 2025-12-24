@@ -4,24 +4,33 @@ import {Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
+  if (loading) return <div className="text-white text-center mt-20">Loading...</div>;
 
-  if (loading) return <div>Loading...</div>;
-
-
-  console.log("Current user:", user);
+  const cards = [
+    { to: "/friends/list", label: "Friends List", color: "bg-blue-500" },
+    { to: "/friends/requests", label: "Requests", color: "bg-indigo-500" },
+    { to: "/friends/add", label: "Add Friend", color: "bg-cyan-500" },
+    { to: "/trips/list", label: "My Trips", color: "bg-emerald-500" },
+    { to: "/trips/create", label: "New Trip", color: "bg-purple-500" },
+  ];
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-6 border rounded shadow">
-      <h1 className="text-2xl mb-4">Hello, {user?.name || "Guest"}</h1>
-      <p className="mb-4">Welcome to the dashboard! Choose where to go:</p>
+    <div className="pt-24 px-6 max-w-4xl mx-auto">
+      <div className="glass-card p-8 rounded-3xl text-white mb-8">
+        <h1 className="text-3xl font-bold mb-2">Hello, {user?.name || "Traveler"}</h1>
+        <p className="opacity-80 text-lg">Manage your expenses and travel groups with style.</p>
+      </div>
 
-      <div className="space-y-2">
-        <Link to="/friends/list" className="block bg-blue-500 text-white px-4 py-2 rounded">Friends List</Link>
-        <Link to="/friends/requests" className="block bg-blue-500 text-white px-4 py-2 rounded">Friend Requests</Link>
-        <Link to="/friends/add" className="block bg-blue-500 text-white px-4 py-2 rounded">Add Friend</Link>
-
-        <Link to="/trips/list" className="block bg-green-500 text-white px-4 py-2 rounded">Trips List</Link>
-        <Link to="/trips/create" className="block bg-green-500 text-white px-4 py-2 rounded">Create Trip</Link>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {cards.map((card) => (
+          <Link 
+            key={card.to} 
+            to={card.to} 
+            className={`glass-card p-6 rounded-2xl hover:scale-105 transition-transform text-white font-semibold text-center`}
+          >
+            {card.label}
+          </Link>
+        ))}
       </div>
     </div>
   );

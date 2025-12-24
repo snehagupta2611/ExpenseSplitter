@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext.jsx";
-
 import Dashboard from "./components/Dashboard.jsx";
 import SignIn from "./components/SignIn.jsx";
 import SignUp from "./components/SignUp.jsx";
@@ -22,29 +21,29 @@ function App() {
   const PrivateRoute = ({ children }) => user ? children : <Navigate to="/signin" />;
 
   return (
-    <Router>
-      <Header/>
-      <Routes>
-        <Route path="/" element={<Navigate to={user ? "/user" : "/signin"} />} />
-
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/signin" element={<SignIn />} />
-
-        <Route path="/user" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-
-        <Route path="/friends/list" element={<PrivateRoute><FriendsList /></PrivateRoute>} />
-        <Route path="/friends/requests" element={<PrivateRoute><FriendRequests /></PrivateRoute>} />
-        <Route path="/friends/add" element={<PrivateRoute><AddFriend /></PrivateRoute>} />
-
-        <Route path="/trips/list" element={<PrivateRoute><TripList /></PrivateRoute>} />
-        <Route path="/trips/create" element={<PrivateRoute><TripForm /></PrivateRoute>} />
-        <Route path="/trips/:tripId" element={<PrivateRoute><TripPage /></PrivateRoute>} />
-        <Route path="/trips/:tripId/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
-        <Route path="/trips/:tripId/expenses" element={<PrivateRoute><ExpenseList /></PrivateRoute>} />
-        <Route path="/trips/:tripId/add-expense" element={<PrivateRoute><ExpenseForm /></PrivateRoute>} />
-        <Route path="/trips/:tripId/split" element={<PrivateRoute><Split /></PrivateRoute>} />
-      </Routes>
-    </Router>
+    <div className="min-h-screen pb-10">
+      <Router>
+        <Header/>
+        <div className="container mx-auto">
+          <Routes>
+            <Route path="/" element={<Navigate to={user ? "/user" : "/signin"} />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/user" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="/friends/list" element={<PrivateRoute><FriendsList /></PrivateRoute>} />
+            <Route path="/friends/requests" element={<PrivateRoute><FriendRequests /></PrivateRoute>} />
+            <Route path="/friends/add" element={<PrivateRoute><AddFriend /></PrivateRoute>} />
+            <Route path="/trips/list" element={<PrivateRoute><TripList /></PrivateRoute>} />
+            <Route path="/trips/create" element={<PrivateRoute><TripForm /></PrivateRoute>} />
+            <Route path="/trips/:tripId" element={<PrivateRoute><TripPage /></PrivateRoute>} />
+            <Route path="/trips/:tripId/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
+            <Route path="/trips/:tripId/expenses" element={<PrivateRoute><ExpenseList /></PrivateRoute>} />
+            <Route path="/trips/:tripId/add-expense" element={<PrivateRoute><ExpenseForm /></PrivateRoute>} />
+            <Route path="/trips/:tripId/split" element={<PrivateRoute><Split /></PrivateRoute>} />
+          </Routes>
+        </div>
+      </Router>
+    </div>
   );
 }
 
