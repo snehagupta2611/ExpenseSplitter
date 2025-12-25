@@ -14,6 +14,7 @@ import ExpenseList from "./components/Trips/ExpenseList.jsx";
 import ExpenseForm from "./components/Trips/ExpenseForm.jsx";
 import Split from "./components/Trips/Split.jsx";
 import Header from "./components/Header.jsx"
+import AddExpense from "./components/Trips/AddExpense.jsx";
 
 function App() {
   const { user } = useAuth();
@@ -35,6 +36,7 @@ function App() {
             <Route path="/friends/add" element={<PrivateRoute><AddFriend /></PrivateRoute>} />
             <Route path="/trips/list" element={<PrivateRoute><TripList /></PrivateRoute>} />
             <Route path="/trips/create" element={<PrivateRoute><TripForm /></PrivateRoute>} />
+            <Route path="/trips/:tripId/ai-review" element={<PrivateRoute><AddExpense /></PrivateRoute>} />
             <Route path="/trips/:tripId" element={<PrivateRoute><TripPage /></PrivateRoute>} />
             <Route path="/trips/:tripId/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
             <Route path="/trips/:tripId/expenses" element={<PrivateRoute><ExpenseList /></PrivateRoute>} />

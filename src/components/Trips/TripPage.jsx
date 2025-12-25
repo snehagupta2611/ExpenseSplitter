@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { firestore } from "../../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
+import ReceiptScanner from "../ReceiptScanner";
 
 function TripPage() {
   const { tripId } = useParams();
@@ -12,6 +13,7 @@ function TripPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [ending, setEnding] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!tripId) return;
@@ -57,6 +59,16 @@ function TripPage() {
     fetchTrip();
   }, [tripId]);
 
+  const handleScanComplete = (scannedData) => {
+  navigate(`/trips/${tripId}/ai-review`, { 
+    state: { 
+      scannedAmount: scannedData.amount,
+      scannedStore: scannedData.storeName,
+      scannedDate: scannedData.date
+    } 
+  });
+};
+
   const handleEndTrip = async () => {
     setEnding(true);
     if (trip?.isActive) {
@@ -91,7 +103,6 @@ function TripPage() {
     <div className="pt-24 px-6 max-w-3xl mx-auto pb-10 text-white">
       <div className="glass-card p-8 rounded-3xl mb-6 text-center border-b-4 border-blue-500/30">
         <h1 className="text-4xl font-black mb-2 tracking-tight">{trip.name}</h1>
-        <p className="opacity-60 text-sm uppercase tracking-widest">Adventure Dashboard</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
@@ -120,6 +131,11 @@ function TripPage() {
                   <span className="block text-2xl mb-1">💬</span>
                   <span className="font-bold">Chat</span>
                 </Link>
+                <div className="glass-card p-6 rounded-3xl text-center hover:bg-yellow-500/20 transition-all border-yellow-500/20 cursor-pointer relative">
+                  <span className="block text-2xl mb-1">✨</span>
+                  <span className="font-bold">AI Scan</span>
+                  <ReceiptScanner onScanComplete={handleScanComplete} />
+                </div>
                 <Link to={`/trips/${tripId}/add-expense`} className="glass-card p-6 rounded-3xl text-center hover:bg-pink-500/20 transition-all border-pink-500/20">
                   <span className="block text-2xl mb-1">💰</span>
                   <span className="font-bold">Add Expense</span>

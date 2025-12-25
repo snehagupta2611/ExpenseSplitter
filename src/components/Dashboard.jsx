@@ -18,7 +18,7 @@ const Dashboard = () => {
     <div className="pt-24 px-6 max-w-4xl mx-auto">
       <div className="glass-card p-8 rounded-3xl text-white mb-8">
         <h1 className="text-3xl font-bold mb-2">Hello, {user?.name || "Traveler"}</h1>
-        <p className="opacity-80 text-lg">Manage your expenses and travel groups with style.</p>
+        <p className="opacity-80 text-lg">Manage your expenses and travel groups.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
