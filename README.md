@@ -14,6 +14,7 @@ SplitEase is a modern, collaborative expense-tracking web application designed f
 * **Friend System:** Send and receive friend requests to build your travel network.
 * **Live Balances:** View a simplified summary of net balances (who needs to pay and who needs to receive).
 * **Expense Approval:** Trip leaders can approve or reject expenses to ensure transparency.
+* **Smart AI Scanner:** Upload Payment Receipts and scan them to add expense without typing.
 
 ---
 
@@ -65,3 +66,4 @@ SplitEase is a modern, collaborative expense-tracking web application designed f
     ```
 
 ---
+
